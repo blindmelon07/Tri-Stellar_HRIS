@@ -10,9 +10,9 @@ export default function Login() {
                 <div className="w-full max-w-sm">
                     <div className="mb-8 text-center">
                         <img
-                            src="/images/tristellar-logo.jpg"
+                            src="/images/tristellar-wordmark.png"
                             alt="TriStellar – Bigas ng Bayan"
-                            className="mx-auto size-44 rounded-2xl bg-white object-contain"
+                            className="mx-auto h-20 w-auto"
                         />
                         <h1 className="mt-4 text-xl font-semibold text-ink">
                             TriStellar HRIS

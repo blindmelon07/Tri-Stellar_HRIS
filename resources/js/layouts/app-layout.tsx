@@ -167,7 +167,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                     <img
                         src="/images/tristellar-wordmark.png"
                         alt={name}
-                        className="h-9 w-auto rounded bg-white px-1 py-0.5"
+                        className="h-9 w-auto"
                     />
                     <span className="rounded bg-brand-soft px-1.5 py-0.5 text-[11px] font-semibold tracking-wider text-brand">
                         HRIS
@@ -239,7 +239,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                     <img
                         src="/images/tristellar-wordmark.png"
                         alt={name}
-                        className="h-7 w-auto rounded bg-white px-1"
+                        className="h-7 w-auto"
                     />
                 </header>
                 <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
