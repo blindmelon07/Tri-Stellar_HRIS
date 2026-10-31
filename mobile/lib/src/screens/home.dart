@@ -38,17 +38,29 @@ class HomeScreen extends StatelessWidget {
               const StatusBadge('HRIS', tone: BadgeTone.brand),
             ],
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
-              Text(
-                '${greeting(DateTime.now())}, ${me.firstName}',
-                style: Theme.of(context).textTheme.headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.w700),
+              EmployeeAvatar(
+                name: me.fullName,
+                photoUrl: me.photoUrl,
+                radius: 26,
               ),
-              Text(
-                longDate(DateTime.now()),
-                style: TextStyle(color: context.colors.textSecondary),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${greeting(DateTime.now())}, ${me.firstName}',
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                    Text(
+                      longDate(DateTime.now()),
+                      style: TextStyle(color: context.colors.textSecondary),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

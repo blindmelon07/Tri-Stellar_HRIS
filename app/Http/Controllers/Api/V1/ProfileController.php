@@ -19,6 +19,10 @@ class ProfileController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'employee' => EmployeeResource::make($employee),
+                // Versioned so the app refetches after HR uploads a new photo.
+                'photo_url' => $employee->photo_path
+                    ? route('api.v1.me.photo', ['v' => substr(md5($employee->photo_path), 0, 8)])
+                    : null,
                 'can' => [
                     'endorse_filings' => $user->can('endorse-filings'),
                 ],

@@ -26,17 +26,10 @@ class ProfileScreen extends StatelessWidget {
         return [
           Column(
             children: [
-              CircleAvatar(
-                radius: 36,
-                backgroundColor: colors.brandSoft,
-                child: Text(
-                  me.fullName.characters.first,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: brand,
-                  ),
-                ),
+              EmployeeAvatar(
+                name: me.fullName,
+                photoUrl: me.photoUrl,
+                radius: 44,
               ),
               const SizedBox(height: 8),
               Text(

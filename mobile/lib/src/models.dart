@@ -26,6 +26,7 @@ class Profile {
     required this.shiftStart,
     required this.shiftEnd,
     required this.canEndorse,
+    this.photoUrl,
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) {
@@ -43,6 +44,7 @@ class Profile {
       shiftName: shift['name'] as String,
       shiftStart: shift['start_time'] as String,
       shiftEnd: shift['end_time'] as String,
+      photoUrl: json['photo_url'] as String?,
       canEndorse:
           (json['can'] as Map<String, dynamic>)['endorse_filings'] == true,
     );
@@ -59,6 +61,9 @@ class Profile {
   final String shiftStart;
   final String shiftEnd;
   final bool canEndorse;
+
+  /// Authorized URL of the employee's photo (load with the API token), or null.
+  final String? photoUrl;
 }
 
 class PayslipLine {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'api.dart';
+import 'session.dart';
 import 'theme.dart';
 
 /// Loads data for a screen and shows loading, error and pull-to-refresh states.
@@ -295,6 +296,58 @@ class StatTile extends StatelessWidget {
       ),
     ],
   );
+}
+
+/// The employee's photo (loaded with the API token), or their initials when there is none.
+class EmployeeAvatar extends StatelessWidget {
+  const EmployeeAvatar({
+    super.key,
+    required this.name,
+    this.photoUrl,
+    this.radius = 20,
+  });
+
+  final String name;
+  final String? photoUrl;
+  final double radius;
+
+  /// "Dela Cruz, Juan K." → "DJ": first letter of the surname and of the first name
+  /// (multi-word surnames like Dela Cruz count as one).
+  String get _initials {
+    final parts = name.contains(',')
+        ? name.split(',').map((part) => part.trim())
+        : name.split(RegExp(r'\s+'));
+
+    return parts
+        .where((part) => part.isNotEmpty)
+        .take(2)
+        .map((part) => part[0].toUpperCase())
+        .join();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final token = SessionScope.of(context).api.token;
+    final url = photoUrl;
+
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: context.colors.brandSoft,
+      foregroundImage: url == null
+          ? null
+          : NetworkImage(url, headers: {'Authorization': 'Bearer $token'}),
+      // Falls back to the initials if the photo cannot be loaded.
+      onForegroundImageError: url == null ? null : (_, _) {},
+      child: Text(
+        _initials,
+        style: TextStyle(
+          fontSize: radius * 0.7,
+          fontWeight: FontWeight.w700,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
+  }
 }
 
 void showMessage(BuildContext context, String message) =>

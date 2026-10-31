@@ -8,6 +8,8 @@ import 'package:hris/src/api.dart';
 import 'package:hris/src/format.dart';
 import 'package:hris/src/models.dart';
 import 'package:hris/src/session.dart';
+import 'package:hris/src/theme.dart';
+import 'package:hris/src/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
@@ -101,6 +103,39 @@ void main() {
         ),
       ),
     );
+  });
+
+  testWidgets('avatar loads the photo with the token, or shows initials', (
+    tester,
+  ) async {
+    final session = Session(api: ApiClient()..token = 'abc');
+
+    Widget wrap(Widget child) => SessionScope(
+      session: session,
+      child: MaterialApp(
+        theme: buildTheme(Brightness.light),
+        home: Scaffold(body: child),
+      ),
+    );
+
+    await tester.pumpWidget(
+      wrap(const EmployeeAvatar(name: 'Dela Cruz, Juan K.')),
+    );
+    expect(find.text('DJ'), findsOneWidget);
+
+    await tester.pumpWidget(
+      wrap(
+        const EmployeeAvatar(
+          name: 'Dela Cruz, Juan K.',
+          photoUrl: 'https://example.test/api/v1/me/photo?v=1',
+        ),
+      ),
+    );
+    final avatar = tester.widget<CircleAvatar>(find.byType(CircleAvatar));
+    final image = avatar.foregroundImage! as NetworkImage;
+
+    expect(image.url, 'https://example.test/api/v1/me/photo?v=1');
+    expect(image.headers, {'Authorization': 'Bearer abc'});
   });
 
   testWidgets('shows the sign-in screen when no one is signed in', (

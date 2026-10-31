@@ -10,6 +10,7 @@ use App\Models\PayrollPeriod;
 use App\Models\Payslip;
 use App\Models\TimeLog;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
@@ -45,6 +46,26 @@ test('token login rejects bad credentials and accounts without an employee recor
         'password' => 'password',
         'device_name' => 'Phone',
     ])->assertUnprocessable()->assertJsonValidationErrors('email');
+});
+
+test('the profile includes a photo the app can load with its token', function () {
+    Storage::fake('local');
+    Storage::disk('local')->put('employee-photos/juan.jpg', 'image-bytes');
+    $this->employee->update(['photo_path' => 'employee-photos/juan.jpg']);
+    $token = $this->employee->user->createToken('Phone')->plainTextToken;
+
+    $photoUrl = $this->withToken($token)->getJson(route('api.v1.me'))->assertOk()->json('data.photo_url');
+
+    expect($photoUrl)->toContain('/api/v1/me/photo');
+
+    $this->withToken($token)->get($photoUrl)->assertOk();
+});
+
+test('the profile photo is null and 404 when the employee has none', function () {
+    Sanctum::actingAs($this->employee->user);
+
+    $this->getJson(route('api.v1.me'))->assertJsonPath('data.photo_url', null);
+    $this->getJson(route('api.v1.me.photo'))->assertNotFound();
 });
 
 test('signing out revokes the current token', function () {

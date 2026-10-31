@@ -391,9 +391,13 @@ export function Avatar({
         md: 'size-12 text-sm',
         lg: 'size-24 text-2xl',
     };
-    const initials = name
-        .replace(',', '')
-        .split(/\s+/)
+    // "Dela Cruz, Juan K." → "DJ": surname and first-name initials, so
+    // multi-word surnames like Dela Cruz count as one.
+    const initials = (
+        name.includes(',')
+            ? name.split(',').map((part) => part.trim())
+            : name.split(/\s+/)
+    )
         .filter(Boolean)
         .slice(0, 2)
         .map((part) => part[0]?.toUpperCase())
