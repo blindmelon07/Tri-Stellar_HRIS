@@ -30,9 +30,9 @@
     --line: #e2e5ea;
     --ink: #161a21;
     --ink-muted: #5f6877;
-    --brand: #1f4fd1;
+    --brand: #c2570c;
     --brand-ink: #ffffff;
-    --brand-soft: #e8eefc;
+    --brand-soft: #fdeedd;
     color-scheme: light;
 }
 
@@ -44,9 +44,9 @@
         --line: #2a313c;
         --ink: #e9edf2;
         --ink-muted: #98a2b1;
-        --brand: #6d93f5;
+        --brand: #f59e42;
         --brand-ink: #0d1015;
-        --brand-soft: #1b2741;
+        --brand-soft: #3a2614;
         color-scheme: dark;
     }
 }

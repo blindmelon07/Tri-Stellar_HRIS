@@ -164,11 +164,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 )}
             >
                 <div className="flex h-14 items-center gap-2 border-b border-line px-5">
-                    <span className="flex size-7 items-center justify-center rounded-md bg-brand text-xs font-bold text-brand-ink">
-                        TS
-                    </span>
-                    <span className="text-sm font-semibold text-ink">
-                        {name} HRIS
+                    <img
+                        src="/images/tristellar-wordmark.png"
+                        alt={name}
+                        className="h-9 w-auto rounded bg-white px-1 py-0.5"
+                    />
+                    <span className="rounded bg-brand-soft px-1.5 py-0.5 text-[11px] font-semibold tracking-wider text-brand">
+                        HRIS
                     </span>
                 </div>
                 <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
@@ -234,9 +236,11 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                     >
                         Menu
                     </button>
-                    <span className="text-sm font-semibold text-ink">
-                        {name} HRIS
-                    </span>
+                    <img
+                        src="/images/tristellar-wordmark.png"
+                        alt={name}
+                        className="h-7 w-auto rounded bg-white px-1"
+                    />
                 </header>
                 <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
                     {children}

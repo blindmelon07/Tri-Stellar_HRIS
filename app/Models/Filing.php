@@ -47,6 +47,17 @@ class Filing extends Model
     use HasFactory;
 
     /**
+     * Mirrors the column defaults so a newly filed request reads as pending before it is reloaded.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'status' => 'pending',
+        'is_half_day' => false,
+        'with_pay' => false,
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

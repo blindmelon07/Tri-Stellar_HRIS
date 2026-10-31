@@ -9,11 +9,13 @@ export default function Login() {
             <div className="flex min-h-screen items-center justify-center px-4">
                 <div className="w-full max-w-sm">
                     <div className="mb-8 text-center">
-                        <span className="inline-flex size-11 items-center justify-center rounded-lg bg-brand text-sm font-bold text-brand-ink">
-                            TS
-                        </span>
+                        <img
+                            src="/images/tristellar-logo.jpg"
+                            alt="TriStellar – Bigas ng Bayan"
+                            className="mx-auto size-44 rounded-2xl bg-white object-contain"
+                        />
                         <h1 className="mt-4 text-xl font-semibold text-ink">
-                            Tri-Stellar HRIS
+                            TriStellar HRIS
                         </h1>
                         <p className="mt-1 text-sm text-ink-muted">
                             Employee records, timekeeping and payroll

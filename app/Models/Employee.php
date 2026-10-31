@@ -186,6 +186,24 @@ class Employee extends Model
     }
 
     /**
+     * Filings from this Dept. Head's team (excluding their own) that they may endorse.
+     *
+     * @return Builder<Filing>
+     */
+    public function endorsableFilings(): Builder
+    {
+        return Filing::query()
+            ->whereHas('employee', fn (Builder $query) => $query->whereIn('department_id', $this->headedDepartments()->select('id')))
+            ->whereNot('employee_id', $this->id);
+    }
+
+    public function canEndorse(Filing $filing): bool
+    {
+        return $filing->employee_id !== $this->id
+            && $this->headedDepartments()->whereKey($filing->employee->department_id)->exists();
+    }
+
+    /**
      * The employee's daily rate, derived from a monthly rate when needed.
      */
     public function dailyRate(): float

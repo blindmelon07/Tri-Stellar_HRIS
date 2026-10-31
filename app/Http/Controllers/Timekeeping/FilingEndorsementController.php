@@ -19,13 +19,10 @@ class FilingEndorsementController extends Controller
 {
     public function index(Request $request): Response
     {
-        $departmentIds = $request->user()->employee->headedDepartments()->pluck('id');
         $showAll = $request->boolean('all');
 
-        $filings = Filing::query()
+        $filings = $request->user()->employee->endorsableFilings()
             ->with(['employee:id,employee_number,first_name,last_name,middle_name,suffix', 'shift:id,name'])
-            ->whereHas('employee', fn (Builder $query) => $query->whereIn('department_id', $departmentIds))
-            ->whereNot('employee_id', $request->user()->employee->id)
             ->unless($showAll, fn (Builder $query) => $query->where('status', FilingStatus::Pending))
             ->latest()
             ->paginate(30)
@@ -44,9 +41,7 @@ class FilingEndorsementController extends Controller
             'remarks' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $headsDepartment = $request->user()->employee->headedDepartments()->whereKey($filing->employee->department_id)->exists();
-
-        abort_unless($headsDepartment && $filing->employee_id !== $request->user()->employee->id, 403);
+        abort_unless($request->user()->employee->canEndorse($filing), 403);
 
         if ($filing->status !== FilingStatus::Pending) {
             return Inertia::flash('error', 'This filing has already been reviewed.')->back();
