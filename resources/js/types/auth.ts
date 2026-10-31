@@ -1,14 +1,29 @@
+export type UserRole =
+    | 'admin'
+    | 'hr_timekeeper'
+    | 'hr_payroll'
+    | 'finance'
+    | 'employee';
+
 export type User = {
     id: number;
     name: string;
     email: string;
-    avatar?: string;
-    email_verified_at: string | null;
-    created_at: string;
-    updated_at: string;
-    [key: string]: unknown; // This allows for additional properties...
+    role: UserRole;
 };
 
 export type Auth = {
-    user: User;
+    user: User | null;
+    employee: {
+        id: number;
+        employee_number: string;
+        full_name: string;
+    } | null;
+    can: {
+        manageUsers: boolean;
+        manageEmployees: boolean;
+        manageTimekeeping: boolean;
+        managePayroll: boolean;
+        endorseFilings: boolean;
+    };
 };

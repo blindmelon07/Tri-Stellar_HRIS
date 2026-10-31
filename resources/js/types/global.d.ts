@@ -11,8 +11,17 @@ declare module '@inertiajs/core' {
         sharedPageProps: {
             name: string;
             auth: Auth;
-            sidebarOpen: boolean;
             [key: string]: unknown;
+        };
+        flashDataType: {
+            success?: string;
+            error?: string;
+            importResult?: {
+                imported: number;
+                duplicates: number;
+                unknown_employees: string[];
+                invalid_rows: number[];
+            };
         };
     }
 }

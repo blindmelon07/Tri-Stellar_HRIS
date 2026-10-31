@@ -35,11 +35,21 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user?->only('id', 'name', 'email', 'role'),
+                'employee' => $user?->employee?->only('id', 'employee_number', 'full_name'),
+                'can' => [
+                    'manageUsers' => $user?->can('manage-users') ?? false,
+                    'manageEmployees' => $user?->can('manage-employees') ?? false,
+                    'manageTimekeeping' => $user?->can('manage-timekeeping') ?? false,
+                    'managePayroll' => $user?->can('manage-payroll') ?? false,
+                    'endorseFilings' => $user?->can('endorse-filings') ?? false,
+                ],
             ],
         ];
     }

@@ -9,3 +9,55 @@
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
 }
+
+/* Semantic tokens: components use these so light and dark mode stay in sync. */
+@theme inline {
+    --color-canvas: var(--canvas);
+    --color-surface: var(--surface);
+    --color-surface-muted: var(--surface-muted);
+    --color-line: var(--line);
+    --color-ink: var(--ink);
+    --color-ink-muted: var(--ink-muted);
+    --color-brand: var(--brand);
+    --color-brand-ink: var(--brand-ink);
+    --color-brand-soft: var(--brand-soft);
+}
+
+:root {
+    --canvas: #f6f7f9;
+    --surface: #ffffff;
+    --surface-muted: #f1f3f6;
+    --line: #e2e5ea;
+    --ink: #161a21;
+    --ink-muted: #5f6877;
+    --brand: #1f4fd1;
+    --brand-ink: #ffffff;
+    --brand-soft: #e8eefc;
+    color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --canvas: #0d1015;
+        --surface: #151a21;
+        --surface-muted: #1c222b;
+        --line: #2a313c;
+        --ink: #e9edf2;
+        --ink-muted: #98a2b1;
+        --brand: #6d93f5;
+        --brand-ink: #0d1015;
+        --brand-soft: #1b2741;
+        color-scheme: dark;
+    }
+}
+
+body {
+    background-color: var(--canvas);
+    color: var(--ink);
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
