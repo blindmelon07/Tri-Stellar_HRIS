@@ -14,6 +14,7 @@ use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Shift;
 use App\Models\User;
+use App\Services\Payroll\ContributionCalculator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -70,12 +71,17 @@ class EmployeeController extends Controller
         return redirect()->route('employees.show', $employee);
     }
 
-    public function show(Employee $employee): Response
+    public function show(Employee $employee, ContributionCalculator $contributions): Response
     {
         $employee->load(['department', 'branch', 'shift', 'user:id,email,role']);
 
         return Inertia::render('employees/show', [
             'employee' => $employee,
+            'contributions' => [
+                ...$contributions->forEmployee($employee),
+                'monthly_salary' => $employee->monthlySalary(),
+                'sss_salary_credit' => $contributions->sssSalaryCredit($employee->monthlySalary()),
+            ],
             'filings' => $employee->filings()->latest()->limit(10)->get(),
             'loans' => $employee->loans()->latest('start_date')->get(),
             'payslips' => $employee->payslips()->with('payrollPeriod')->latest('id')->limit(6)->get(),

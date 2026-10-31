@@ -21,6 +21,13 @@ type Props = {
     filings: Filing[];
     loans: Loan[];
     payslips: Payslip[];
+    contributions: {
+        sss_contribution: number;
+        philhealth_contribution: number;
+        pagibig_contribution: number;
+        monthly_salary: number;
+        sss_salary_credit: number;
+    };
 };
 
 function Detail({ label, children }: { label: string; children: ReactNode }) {
@@ -39,6 +46,7 @@ export default function EmployeeShow({
     filings,
     loans,
     payslips: recentPayslips,
+    contributions,
 }: Props) {
     return (
         <>
@@ -136,12 +144,47 @@ export default function EmployeeShow({
                             <Detail label="TIN">{employee.tin}</Detail>
                             <Detail label="Statutory deductions">
                                 {employee.has_statutory_deductions ? (
-                                    `SSS ${peso(employee.sss_contribution)} · PHIC ${peso(employee.philhealth_contribution)} · HDMF ${peso(employee.pagibig_contribution)}`
+                                    <Badge tone="green">Applied monthly</Badge>
                                 ) : (
                                     <Badge tone="amber">Not yet applied</Badge>
                                 )}
                             </Detail>
                         </dl>
+
+                        <div className="mt-5 border-t border-line pt-4">
+                            <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+                                <h3 className="text-sm font-semibold text-ink">
+                                    Monthly contributions (employee share)
+                                </h3>
+                                <span className="text-xs text-ink-muted">
+                                    {employee.custom_contributions
+                                        ? 'Custom amounts set by HR'
+                                        : `From the 2026 tables · monthly salary ${peso(contributions.monthly_salary)} · SSS MSC ${peso(contributions.sss_salary_credit)}`}
+                                </span>
+                            </div>
+                            <dl className="grid gap-4 sm:grid-cols-4">
+                                <Detail label="SSS">
+                                    {peso(contributions.sss_contribution)}
+                                </Detail>
+                                <Detail label="PhilHealth">
+                                    {peso(
+                                        contributions.philhealth_contribution,
+                                    )}
+                                </Detail>
+                                <Detail label="Pag-IBIG">
+                                    {peso(contributions.pagibig_contribution)}
+                                </Detail>
+                                <Detail label="Total per month">
+                                    <span className="font-semibold">
+                                        {peso(
+                                            contributions.sss_contribution +
+                                                contributions.philhealth_contribution +
+                                                contributions.pagibig_contribution,
+                                        )}
+                                    </span>
+                                </Detail>
+                            </dl>
+                        </div>
                     </Card>
 
                     <Card title="Recent filings">

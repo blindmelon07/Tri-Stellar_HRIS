@@ -29,7 +29,10 @@ use LogicException;
  */
 class PayrollProcessor
 {
-    public function __construct(private WorkHoursCalculator $calculator) {}
+    public function __construct(
+        private WorkHoursCalculator $calculator,
+        private ContributionCalculator $contributionCalculator,
+    ) {}
 
     /**
      * (Re)compute every payslip in a draft or processed period.
@@ -237,8 +240,9 @@ class PayrollProcessor
     }
 
     /**
-     * Fixed SSS / PhilHealth / Pag-IBIG shares, deducted on the 1st-half payroll
-     * once the employee has completed the statutory grace period.
+     * Monthly SSS / PhilHealth / Pag-IBIG employee shares (from the contribution tables
+     * or the employee's custom amounts), deducted on the 1st-half payroll once the
+     * employee has completed the statutory grace period.
      *
      * @return array{sss_contribution: float, philhealth_contribution: float, pagibig_contribution: float}
      */
@@ -248,10 +252,10 @@ class PayrollProcessor
             && $employee->has_statutory_deductions
             && $employee->date_hired->addMonths(config('hris.payroll.statutory_grace_months'))->lte($period->end_date);
 
-        return [
-            'sss_contribution' => $eligible ? (float) $employee->sss_contribution : 0.0,
-            'philhealth_contribution' => $eligible ? (float) $employee->philhealth_contribution : 0.0,
-            'pagibig_contribution' => $eligible ? (float) $employee->pagibig_contribution : 0.0,
-        ];
+        if (! $eligible) {
+            return ['sss_contribution' => 0.0, 'philhealth_contribution' => 0.0, 'pagibig_contribution' => 0.0];
+        }
+
+        return $this->contributionCalculator->forEmployee($employee);
     }
 }

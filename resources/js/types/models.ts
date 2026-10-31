@@ -48,6 +48,7 @@ export type Employee = EmployeeSummary & {
     pagibig_number: string | null;
     tin: string | null;
     has_statutory_deductions: boolean;
+    custom_contributions: boolean;
     sss_contribution: string;
     philhealth_contribution: string;
     pagibig_contribution: string;

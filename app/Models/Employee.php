@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $rate
  * @property PaymentMethod $payment_method
  * @property bool $has_statutory_deductions
+ * @property bool $custom_contributions
  * @property string $sss_contribution
  * @property string $philhealth_contribution
  * @property string $pagibig_contribution
@@ -56,7 +57,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'employee_status', 'employment_status', 'date_hired', 'date_separated',
     'pay_type', 'rate', 'payment_method', 'bank_account_number',
     'sss_number', 'philhealth_number', 'pagibig_number', 'tin',
-    'has_statutory_deductions', 'sss_contribution', 'philhealth_contribution', 'pagibig_contribution',
+    'has_statutory_deductions', 'custom_contributions', 'sss_contribution', 'philhealth_contribution', 'pagibig_contribution',
     'emergency_contact_name', 'emergency_contact_relationship', 'emergency_contact_number',
 ])]
 #[Appends(['full_name'])]
@@ -83,6 +84,7 @@ class Employee extends Model
             'payment_method' => PaymentMethod::class,
             'rate' => 'decimal:2',
             'has_statutory_deductions' => 'boolean',
+            'custom_contributions' => 'boolean',
             'sss_contribution' => 'decimal:2',
             'philhealth_contribution' => 'decimal:2',
             'pagibig_contribution' => 'decimal:2',
@@ -201,6 +203,19 @@ class Employee extends Model
     {
         return $filing->employee_id !== $this->id
             && $this->headedDepartments()->whereKey($filing->employee->department_id)->exists();
+    }
+
+    /**
+     * Monthly basic salary for government contributions. Daily-rated and Per Biyahe
+     * employees use their (base) daily rate × average working days per month.
+     */
+    public function monthlySalary(): float
+    {
+        if ($this->pay_type === PayType::Monthly) {
+            return (float) $this->rate;
+        }
+
+        return round((float) $this->rate * config('hris.payroll.working_days_per_year') / 12, 2);
     }
 
     /**

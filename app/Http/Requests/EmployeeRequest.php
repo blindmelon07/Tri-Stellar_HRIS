@@ -69,9 +69,11 @@ class EmployeeRequest extends FormRequest
             'pagibig_number' => ['nullable', 'string', 'max:30'],
             'tin' => ['nullable', 'string', 'max:30'],
             'has_statutory_deductions' => ['boolean'],
-            'sss_contribution' => ['required', 'numeric', 'min:0'],
-            'philhealth_contribution' => ['required', 'numeric', 'min:0'],
-            'pagibig_contribution' => ['required', 'numeric', 'min:0'],
+            'custom_contributions' => ['boolean'],
+            // Only stored when HR overrides the contribution tables.
+            'sss_contribution' => ['exclude_unless:custom_contributions,true', 'required', 'numeric', 'min:0'],
+            'philhealth_contribution' => ['exclude_unless:custom_contributions,true', 'required', 'numeric', 'min:0'],
+            'pagibig_contribution' => ['exclude_unless:custom_contributions,true', 'required', 'numeric', 'min:0'],
 
             'emergency_contact_name' => ['nullable', 'string', 'max:255'],
             'emergency_contact_relationship' => ['nullable', 'string', 'max:50'],

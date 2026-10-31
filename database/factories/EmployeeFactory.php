@@ -49,6 +49,7 @@ class EmployeeFactory extends Factory
             'rate' => 600,
             'payment_method' => PaymentMethod::Cash,
             'has_statutory_deductions' => true,
+            'custom_contributions' => false,
             'sss_contribution' => 750,
             'philhealth_contribution' => 375,
             'pagibig_contribution' => 200,
@@ -68,6 +69,19 @@ class EmployeeFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'pay_type' => PayType::PerBiyahe,
             'job_title' => 'Driver',
+        ]);
+    }
+
+    /**
+     * Use hand-entered contribution amounts instead of the contribution tables.
+     */
+    public function customContributions(float $sss = 750, float $philhealth = 375, float $pagibig = 200): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'custom_contributions' => true,
+            'sss_contribution' => $sss,
+            'philhealth_contribution' => $philhealth,
+            'pagibig_contribution' => $pagibig,
         ]);
     }
 

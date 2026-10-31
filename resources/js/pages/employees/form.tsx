@@ -91,6 +91,7 @@ export default function EmployeeForm({
         pagibig_number: employee?.pagibig_number ?? '',
         tin: employee?.tin ?? '',
         has_statutory_deductions: employee?.has_statutory_deductions ?? false,
+        custom_contributions: employee?.custom_contributions ?? false,
         sss_contribution: employee?.sss_contribution ?? '0',
         philhealth_contribution: employee?.philhealth_contribution ?? '0',
         pagibig_contribution: employee?.pagibig_contribution ?? '0',
@@ -299,7 +300,7 @@ export default function EmployeeForm({
 
                 <Section
                     title="Government & Statutory Information"
-                    description="Tick deductions only after the employee completes one month from the date hired. Contributions are deducted on the 1st-half payroll."
+                    description="SSS, PhilHealth and Pag-IBIG are computed from the 2026 contribution tables using the employee's monthly salary, and deducted once a month on the 1st-half payroll (after one month from the date hired)."
                 >
                     <Field label="SSS No." error={errors.sss_number}>
                         <Input {...text('sss_number')} />
@@ -319,7 +320,7 @@ export default function EmployeeForm({
                     <Field label="TIN" error={errors.tin}>
                         <Input {...text('tin')} />
                     </Field>
-                    <div className="flex items-end pb-2 sm:col-span-2">
+                    <div className="flex flex-col justify-end gap-2 pb-2 sm:col-span-2">
                         <Checkbox
                             label="Apply statutory deductions"
                             checked={data.has_statutory_deductions}
@@ -330,40 +331,54 @@ export default function EmployeeForm({
                                 )
                             }
                         />
+                        <Checkbox
+                            label="Use custom amounts instead of the contribution tables"
+                            checked={data.custom_contributions}
+                            onChange={(event) =>
+                                setData(
+                                    'custom_contributions',
+                                    event.target.checked,
+                                )
+                            }
+                        />
                     </div>
-                    <Field
-                        label="SSS employee share"
-                        error={errors.sss_contribution}
-                    >
-                        <Input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            {...text('sss_contribution')}
-                        />
-                    </Field>
-                    <Field
-                        label="PhilHealth employee share"
-                        error={errors.philhealth_contribution}
-                    >
-                        <Input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            {...text('philhealth_contribution')}
-                        />
-                    </Field>
-                    <Field
-                        label="Pag-IBIG employee share"
-                        error={errors.pagibig_contribution}
-                    >
-                        <Input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            {...text('pagibig_contribution')}
-                        />
-                    </Field>
+                    {data.custom_contributions && (
+                        <>
+                            <Field
+                                label="SSS employee share (monthly)"
+                                error={errors.sss_contribution}
+                            >
+                                <Input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    {...text('sss_contribution')}
+                                />
+                            </Field>
+                            <Field
+                                label="PhilHealth employee share (monthly)"
+                                error={errors.philhealth_contribution}
+                            >
+                                <Input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    {...text('philhealth_contribution')}
+                                />
+                            </Field>
+                            <Field
+                                label="Pag-IBIG employee share (monthly)"
+                                error={errors.pagibig_contribution}
+                            >
+                                <Input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    {...text('pagibig_contribution')}
+                                />
+                            </Field>
+                        </>
+                    )}
                 </Section>
 
                 <Section title="Emergency Contact">

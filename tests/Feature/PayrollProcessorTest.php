@@ -54,9 +54,12 @@ test('daily-rated pay is days worked times rate, with contributions on the 1st h
         ->and((float) $payslip->days_absent)->toBe(1.0)
         ->and((float) $payslip->basic_pay)->toBe(7200.0)
         ->and((float) $payslip->absence_deduction)->toBe(0.0)
-        ->and((float) $payslip->sss_contribution)->toBe(750.0)
-        ->and((float) $payslip->total_deductions)->toBe(1325.0)
-        ->and((float) $payslip->net_pay)->toBe(7200.0 - 1325.0)
+        // Monthly salary 600 × 313 ÷ 12 = 15,650 → SSS 775 (MSC 15,500), PhilHealth 391.25, Pag-IBIG 200.
+        ->and((float) $payslip->sss_contribution)->toBe(775.0)
+        ->and((float) $payslip->philhealth_contribution)->toBe(391.25)
+        ->and((float) $payslip->pagibig_contribution)->toBe(200.0)
+        ->and((float) $payslip->total_deductions)->toBe(1366.25)
+        ->and((float) $payslip->net_pay)->toBe(7200.0 - 1366.25)
         ->and($period->fresh()->status)->toBe(PayrollPeriodStatus::Processed);
 });
 
@@ -107,6 +110,18 @@ test('per biyahe drivers are paid from uploaded trips only', function () {
         ->and((float) $payslip->absence_deduction)->toBe(0.0)
         ->and((float) $payslip->other_deductions)->toBe(500.0)
         ->and((float) $payslip->net_pay)->toBe(4000.0);
+});
+
+test('custom contribution amounts replace the tables on the payslip', function () {
+    $employee = Employee::factory()->for($this->shift)->customContributions(1000, 500, 100)->create();
+    $period = PayrollPeriod::factory()->create();
+
+    $this->processor->process($period);
+    $payslip = $period->payslips()->sole();
+
+    expect((float) $payslip->sss_contribution)->toBe(1000.0)
+        ->and((float) $payslip->philhealth_contribution)->toBe(500.0)
+        ->and((float) $payslip->pagibig_contribution)->toBe(100.0);
 });
 
 test('statutory contributions wait until one month after hire', function () {

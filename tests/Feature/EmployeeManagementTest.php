@@ -90,6 +90,39 @@ test('HR can update an employee without changing the existing login', function (
         ->and($employee->user->fresh()->password)->toBe($originalPassword);
 });
 
+test('contribution amounts are only required and saved when custom amounts are chosen', function () {
+    $this->actingAs($this->hr)
+        ->post(route('employees.store'), employeePayload([
+            'custom_contributions' => true,
+            'sss_contribution' => '',
+        ]))
+        ->assertSessionHasErrors('sss_contribution');
+
+    $this->actingAs($this->hr)
+        ->post(route('employees.store'), employeePayload([
+            'custom_contributions' => false,
+            'sss_contribution' => '999',
+        ]))
+        ->assertSessionHasNoErrors();
+
+    $employee = Employee::where('employee_number', 'TS-01234')->sole();
+
+    expect($employee->custom_contributions)->toBeFalse()
+        ->and((float) $employee->sss_contribution)->toBe(0.0);
+});
+
+test('the profile shows contributions computed from the tables', function () {
+    $employee = Employee::factory()->create(['rate' => 600]);
+
+    $this->actingAs($this->hr)
+        ->get(route('employees.show', $employee))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('contributions.sss_contribution', 775)
+            ->where('contributions.philhealth_contribution', 391.25)
+            ->where('contributions.pagibig_contribution', 200)
+            ->where('contributions.monthly_salary', 15650));
+});
+
 test('a department with employees cannot be deleted', function () {
     $employee = Employee::factory()->create();
 
