@@ -3,26 +3,39 @@
 Employee kiosk app for Android and iOS. It talks to the Laravel system's `/api/v1`
 endpoints with Sanctum tokens (stored in the Android Keystore / iOS Keychain).
 
-**Features:** sign in, today's logs, attendance per cut-off, filing Unaccounted / Leave /
-Overtime / Early Out / Shift Change, withdrawing pending filings, payslips, and team
-endorsements for Department Heads.
+**Features:** sign in, profile photo, today's logs, attendance per cut-off, filing
+Unaccounted / Leave / Overtime / Early Out / Shift Change, withdrawing pending filings,
+payslips, team endorsements for Department Heads, and in-app updates.
 
-## Build the Android APK
+## Release an update
 
 ```powershell
 cd C:\xampp2\htdocs\TriStellarHRIS\mobile
-flutter build apk --release
-copy build\app\outputs\flutter-apk\app-release.apk dist\TriStellar-HRIS.apk
+powershell -ExecutionPolicy Bypass -File .\release.ps1 -Version 1.2.0 -Notes "What changed"
 ```
 
-Build all processor types (the default). Some plugins ship native libraries for several
-types, so an arm64-only APK crashes on 32-bit and x86_64 devices.
+This bumps the build number, builds the signed APK and writes two files in `dist\`:
 
-Upload `dist\TriStellar-HRIS.apk` to the site's `public/downloads/` folder and share
-`https://mistyrose-rook-580675.hostingersite.com/downloads/TriStellar-HRIS.apk` with employees.
+- `TriStellar-HRIS.apk`
+- `latest.json` (version, SHA-256 checksum, release notes)
 
-The app connects to `https://mistyrose-rook-580675.hostingersite.com` by default. To use a
-different server, add `--dart-define=API_URL=https://your-domain` to the build command.
+Upload **both** to the site's `public/downloads/` folder. Installed apps check
+`latest.json` when opened (and when returning to the app, at most hourly), show
+"Update available", download the APK, verify the checksum and open Android's installer.
+Add `-Required` to block older versions until they update.
+
+Android always asks the employee to confirm an install for apps that are not from the
+Play Store; the first time, they may need to allow "Install unknown apps" for this app.
+
+## Release signing key — back it up
+
+Updates only install over the existing app when signed with the same key:
+
+- `android\tristellar-release.jks`
+- `android\key.properties` (passwords)
+
+Both are git-ignored. Keep copies somewhere safe and private. If they are lost, every
+employee must uninstall and reinstall the app.
 
 ## Develop
 
@@ -33,7 +46,11 @@ flutter test
 flutter analyze
 ```
 
+The app connects to `https://mistyrose-rook-580675.hostingersite.com` by default. To use a
+different server, pass `--dart-define=API_URL=https://your-domain` (or `-SiteUrl` to
+`release.ps1`).
+
 ## iOS
 
 Building for iPhone needs a Mac with Xcode (`flutter build ipa`) and an Apple Developer
-account for TestFlight or the App Store.
+account for TestFlight or the App Store. In-app updates are Android-only.

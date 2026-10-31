@@ -4,6 +4,7 @@ import 'src/screens/shell.dart';
 import 'src/screens/sign_in.dart';
 import 'src/session.dart';
 import 'src/theme.dart';
+import 'src/updater.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +36,9 @@ class TriStellarApp extends StatelessWidget {
               );
             }
 
-            return session.isSignedIn ? const Shell() : const SignInScreen();
+            return UpdateChecker(
+              child: session.isSignedIn ? const Shell() : const SignInScreen(),
+            );
           },
         ),
       ),
