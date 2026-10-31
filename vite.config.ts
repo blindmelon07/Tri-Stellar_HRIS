@@ -70,6 +70,7 @@ export default defineConfig({
             'resources/js/components/ui/*',
             'resources/views/mail/*',
             'mobile/**',
+            'public/build/**',
         ],
         sortTailwindcss: {
             functions: ['clsx', 'cn', 'cva'],

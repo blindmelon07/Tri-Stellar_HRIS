@@ -1,7 +1,7 @@
 /.phpunit.cache
 /bootstrap/ssr
 /node_modules
-/public/build
+# /public/build is committed so Hostinger can deploy without Node.js (rebuild with `npm run build` before committing frontend changes).
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage
