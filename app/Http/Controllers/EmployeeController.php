@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -62,6 +63,7 @@ class EmployeeController extends Controller
         $employee = DB::transaction(function () use ($request): Employee {
             $employee = Employee::create($request->employeeAttributes());
             $this->syncPortalAccount($employee, $request);
+            $this->syncPhoto($employee, $request);
 
             return $employee;
         });
@@ -103,11 +105,30 @@ class EmployeeController extends Controller
         DB::transaction(function () use ($request, $employee): void {
             $employee->update($request->employeeAttributes());
             $this->syncPortalAccount($employee, $request);
+            $this->syncPhoto($employee, $request);
         });
 
         Inertia::flash('success', 'Employee record updated.');
 
         return redirect()->route('employees.show', $employee);
+    }
+
+    /**
+     * Store, replace or remove the profile photo on the private disk.
+     */
+    private function syncPhoto(Employee $employee, EmployeeRequest $request): void
+    {
+        $previous = $employee->photo_path;
+
+        if ($request->hasFile('photo')) {
+            $employee->update(['photo_path' => $request->file('photo')->store('employee-photos', 'local')]);
+        } elseif ($request->boolean('remove_photo')) {
+            $employee->update(['photo_path' => null]);
+        }
+
+        if ($previous && $previous !== $employee->photo_path) {
+            Storage::disk('local')->delete($previous);
+        }
     }
 
     /**

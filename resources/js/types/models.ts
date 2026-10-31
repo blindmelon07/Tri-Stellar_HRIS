@@ -20,6 +20,7 @@ export type EmployeeSummary = {
     middle_name: string | null;
     suffix: string | null;
     full_name: string;
+    photo_url?: string | null;
 };
 
 export type Employee = EmployeeSummary & {

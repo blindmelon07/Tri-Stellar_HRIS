@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import type { FormEvent } from 'react';
 import { useState } from 'react';
 import {
+    Avatar,
     Badge,
     Button,
     Card,
@@ -132,8 +133,13 @@ export default function EmployeesIndex({
                             <Td>
                                 <Link
                                     href={employees.show.url(employee.id)}
-                                    className="font-medium text-brand hover:underline"
+                                    className="flex items-center gap-3 font-medium text-brand hover:underline"
                                 >
+                                    <Avatar
+                                        name={employee.full_name}
+                                        photoUrl={employee.photo_url}
+                                        size="sm"
+                                    />
                                     {employee.full_name}
                                 </Link>
                             </Td>

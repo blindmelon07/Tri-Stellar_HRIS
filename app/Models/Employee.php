@@ -11,6 +11,7 @@ use Carbon\CarbonImmutable;
 use Database\Factories\EmployeeFactory;
 use Illuminate\Database\Eloquent\Attributes\Appends;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -27,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $middle_name
  * @property string $last_name
  * @property string|null $suffix
+ * @property string|null $photo_path
  * @property int $branch_id
  * @property int $department_id
  * @property int $shift_id
@@ -45,6 +47,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $philhealth_contribution
  * @property string $pagibig_contribution
  * @property-read string $full_name
+ * @property-read string|null $photo_url
  * @property-read User|null $user
  * @property-read Branch $branch
  * @property-read Department $department
@@ -54,13 +57,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'employee_number', 'user_id', 'first_name', 'middle_name', 'last_name', 'suffix',
     'birth_date', 'gender', 'civil_status', 'mobile_number', 'email', 'address',
     'branch_id', 'department_id', 'shift_id', 'level', 'job_title',
-    'employee_status', 'employment_status', 'date_hired', 'date_separated',
+    'employee_status', 'employment_status', 'date_hired', 'date_separated', 'photo_path',
     'pay_type', 'rate', 'payment_method', 'bank_account_number',
     'sss_number', 'philhealth_number', 'pagibig_number', 'tin',
     'has_statutory_deductions', 'custom_contributions', 'sss_contribution', 'philhealth_contribution', 'pagibig_contribution',
     'emergency_contact_name', 'emergency_contact_relationship', 'emergency_contact_number',
 ])]
-#[Appends(['full_name'])]
+#[Appends(['full_name', 'photo_url'])]
+#[Hidden(['photo_path'])]
 class Employee extends Model
 {
     /** @use HasFactory<EmployeeFactory> */
@@ -102,6 +106,18 @@ class Employee extends Model
             $this->middle_name ? mb_substr($this->middle_name, 0, 1).'.' : null,
             $this->suffix,
         ]))));
+    }
+
+    /**
+     * Authorized URL of the profile photo, versioned so a new upload is not served from cache.
+     *
+     * @return Attribute<string|null, never>
+     */
+    protected function photoUrl(): Attribute
+    {
+        return Attribute::get(fn (): ?string => $this->photo_path
+            ? route('employees.photo', ['employee' => $this->id, 'v' => substr(md5($this->photo_path), 0, 8)])
+            : null);
     }
 
     /**

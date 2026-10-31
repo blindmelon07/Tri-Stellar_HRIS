@@ -5,6 +5,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeePhotoController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\Payroll\LoanController;
 use App\Http\Controllers\Payroll\PayrollAdjustmentController;
@@ -43,6 +44,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('payslips/{payslip}', [PayslipController::class, 'show'])->name('payslips.show');
+    Route::get('employees/{employee}/photo', [EmployeePhotoController::class, 'show'])->name('employees.photo');
 
     // Dept. Head endorsement of filings.
     Route::middleware('can:endorse-filings')->group(function () {

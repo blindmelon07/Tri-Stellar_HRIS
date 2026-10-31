@@ -79,6 +79,9 @@ class EmployeeRequest extends FormRequest
             'emergency_contact_relationship' => ['nullable', 'string', 'max:50'],
             'emergency_contact_number' => ['nullable', 'string', 'max:30'],
 
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', 'dimensions:max_width=5000,max_height=5000'],
+            'remove_photo' => ['boolean'],
+
             'portal_email' => ['nullable', 'email', 'max:255', Rule::unique('users', 'email')->ignore($employee?->user_id)],
             'portal_password' => [
                 Rule::requiredIf(fn (): bool => filled($this->input('portal_email')) && ! $employee?->user_id),
@@ -88,12 +91,23 @@ class EmployeeRequest extends FormRequest
     }
 
     /**
-     * Employee attributes, without the portal account fields.
+     * Employee attributes, without the portal account and photo fields.
      *
      * @return array<string, mixed>
      */
     public function employeeAttributes(): array
     {
-        return $this->safe()->except(['portal_email', 'portal_password']);
+        return $this->safe()->except(['portal_email', 'portal_password', 'photo', 'remove_photo']);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'photo.max' => 'The photo must be 2 MB or smaller.',
+            'photo.mimes' => 'The photo must be a JPG, PNG or WebP image.',
+        ];
     }
 }

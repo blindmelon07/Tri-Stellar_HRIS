@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import {
+    Avatar,
     Badge,
     Card,
     PageHeader,
@@ -51,26 +52,35 @@ export default function EmployeeShow({
     return (
         <>
             <Head title={employee.full_name} />
-            <PageHeader
-                title={employee.full_name}
-                description={`${employee.employee_number} · ${employee.job_title} · ${employee.department?.name}`}
-                actions={
-                    <>
-                        <Link
-                            href={workHours.show.url(employee.id)}
-                            className={buttonClasses('secondary')}
-                        >
-                            Work hours
-                        </Link>
-                        <Link
-                            href={employees.edit.url(employee.id)}
-                            className={buttonClasses()}
-                        >
-                            Edit record
-                        </Link>
-                    </>
-                }
-            />
+            <div className="flex items-start gap-5">
+                <Avatar
+                    name={employee.full_name}
+                    photoUrl={employee.photo_url}
+                    size="lg"
+                />
+                <div className="min-w-0 flex-1 pt-3">
+                    <PageHeader
+                        title={employee.full_name}
+                        description={`${employee.employee_number} · ${employee.job_title} · ${employee.department?.name}`}
+                        actions={
+                            <>
+                                <Link
+                                    href={workHours.show.url(employee.id)}
+                                    className={buttonClasses('secondary')}
+                                >
+                                    Work hours
+                                </Link>
+                                <Link
+                                    href={employees.edit.url(employee.id)}
+                                    className={buttonClasses()}
+                                >
+                                    Edit record
+                                </Link>
+                            </>
+                        }
+                    />
+                </div>
+            </div>
 
             <div className="grid gap-6 lg:grid-cols-3">
                 <div className="flex flex-col gap-6 lg:col-span-2">

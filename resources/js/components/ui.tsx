@@ -374,6 +374,57 @@ export function Pagination({ page }: { page: Paginated<unknown> }) {
     );
 }
 
+/**
+ * Employee photo, or initials on a brand-tinted circle when there is none.
+ */
+export function Avatar({
+    name,
+    photoUrl,
+    size = 'md',
+}: {
+    name: string;
+    photoUrl?: string | null;
+    size?: 'sm' | 'md' | 'lg';
+}) {
+    const sizes = {
+        sm: 'size-8 text-xs',
+        md: 'size-12 text-sm',
+        lg: 'size-24 text-2xl',
+    };
+    const initials = name
+        .replace(',', '')
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase())
+        .join('');
+
+    if (photoUrl) {
+        return (
+            <img
+                src={photoUrl}
+                alt={name}
+                className={cn(
+                    'shrink-0 rounded-full border border-line bg-surface-muted object-cover',
+                    sizes[size],
+                )}
+            />
+        );
+    }
+
+    return (
+        <span
+            aria-hidden
+            className={cn(
+                'inline-flex shrink-0 items-center justify-center rounded-full bg-brand-soft font-semibold text-brand',
+                sizes[size],
+            )}
+        >
+            {initials}
+        </span>
+    );
+}
+
 export function Stat({
     label,
     value,

@@ -1,6 +1,8 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import type { FormEvent, ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import {
+    Avatar,
     Button,
     Card,
     Checkbox,
@@ -101,20 +103,47 @@ export default function EmployeeForm({
         emergency_contact_number: employee?.emergency_contact_number ?? '',
         portal_email: employee?.user?.email ?? '',
         portal_password: '',
+        photo: null as File | null,
+        remove_photo: false,
     });
     const { data, setData, errors, processing } = form;
 
     function submit(event: FormEvent) {
         event.preventDefault();
 
-        if (employee) {
-            form.put(employees.update.url(employee.id));
-        } else {
+        if (!employee) {
             form.post(employees.store.url());
+        } else if (data.photo) {
+            // File uploads must be sent as POST; Laravel treats _method=put as an update.
+            form.transform((values) => ({ ...values, _method: 'put' }));
+            form.post(employees.update.url(employee.id), {
+                forceFormData: true,
+            });
+        } else {
+            form.transform((values) => values);
+            form.put(employees.update.url(employee.id));
         }
     }
 
-    const text = (name: keyof typeof data) => ({
+    const [preview, setPreview] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!data.photo) {
+            setPreview(null);
+
+            return;
+        }
+
+        const url = URL.createObjectURL(data.photo);
+        setPreview(url);
+
+        return () => URL.revokeObjectURL(url);
+    }, [data.photo]);
+
+    const shownPhoto =
+        preview ?? (data.remove_photo ? null : (employee?.photo_url ?? null));
+
+    const text = (name: Exclude<keyof typeof data, 'photo'>) => ({
         value: String(data[name] ?? ''),
         onChange: (event: { target: { value: string } }) =>
             setData(name, event.target.value as never),
@@ -131,6 +160,50 @@ export default function EmployeeForm({
             />
 
             <form onSubmit={submit} className="flex flex-col gap-6">
+                <Card
+                    title="Profile Photo"
+                    description="A clear, front-facing photo. JPG, PNG or WebP, up to 2 MB."
+                >
+                    <div className="flex flex-wrap items-center gap-5">
+                        <Avatar
+                            name={
+                                [data.last_name, data.first_name]
+                                    .filter(Boolean)
+                                    .join(', ') || 'New employee'
+                            }
+                            photoUrl={shownPhoto}
+                            size="lg"
+                        />
+                        <div className="flex flex-col gap-2">
+                            <Field label="Choose photo" error={errors.photo}>
+                                <Input
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    onChange={(event) => {
+                                        setData(
+                                            'photo',
+                                            event.target.files?.[0] ?? null,
+                                        );
+                                        setData('remove_photo', false);
+                                    }}
+                                />
+                            </Field>
+                            {employee?.photo_url && !data.photo && (
+                                <Checkbox
+                                    label="Remove current photo"
+                                    checked={data.remove_photo}
+                                    onChange={(event) =>
+                                        setData(
+                                            'remove_photo',
+                                            event.target.checked,
+                                        )
+                                    }
+                                />
+                            )}
+                        </div>
+                    </div>
+                </Card>
+
                 <Section title="Employee Information">
                     <Field
                         label="Employee No. *"
